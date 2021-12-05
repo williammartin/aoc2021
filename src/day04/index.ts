@@ -1,7 +1,6 @@
 import run from "aocrunner"
 import * as F from "fp-ts/lib/function.js"
 import * as A from "fp-ts/lib/Array.js"
-import { number } from "fp-ts"
 
 const splitBy = (separator: string) => (text: string) => text.split(separator)
 const notEmpty = (text: string) => text.length !== 0

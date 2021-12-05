@@ -29,3 +29,21 @@
  *     import { myUtil } from '../utils'
  *
  */
+
+export function iife<R>(f: () => R): R {
+  return f()
+}
+
+// Stolen from https://stackoverflow.com/a/53292113 and made inclusive
+export function rangeInclusive(start = 0, end = 0, step = 1) {
+  if (start === end || step === 0) {
+    return []
+  }
+
+  const diff = Math.abs(end - start) + 1 // +1 makes this inclusive (for my purposes anyway)
+  const length = Math.ceil(diff / step)
+
+  return start > end
+    ? Array.from({ length }, (_value, key) => start - key * step)
+    : Array.from({ length }, (_value, key) => start + key * step)
+}

@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "aocrunner day",
+    "test": "uvu -r tsm src/**/tests",
+    "test:watch": "watchlist src -- uvu -r tsm src/**/tests",
     "build": "aocrunner build",
     "format": "prettier -w src"
   },
@@ -15,11 +17,15 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^16.11.6",
-    "aocrunner": "^1.4.5",
-    "prettier": "^2.4.1"
+    "aocrunner": "^1.5.0",
+    "prettier": "^2.4.1",
+    "uvu": "^0.5.2",
+    "watchlist": "^0.3.1"
   },
   "dependencies": {
-    "fp-ts": "^2.11.5"
+    "fp-ts": "^2.11.5",
+    "ts-node": "^10.4.0",
+    "tsm": "^2.2.1"
   },
   "engines": {
     "node": ">=16.0.0"
