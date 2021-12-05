@@ -1,8 +1,10 @@
-import { number } from "fp-ts"
 import * as A from "fp-ts/lib/Array.js"
 import * as F from "fp-ts/lib/function.js"
 import * as M from "fp-ts/lib/Map.js"
 import * as S from "fp-ts/lib/string.js"
+import * as O from "fp-ts/lib/Option.js"
+import { Ord } from "fp-ts/lib/Ord.js"
+import { Eq } from "fp-ts/lib/Eq.js"
 import { rangeInclusive } from "../utils/index.js"
 
 type Point = { x: number; y: number }
@@ -70,22 +72,28 @@ export const pointsBetweenLineEnds = ({ start, end }: LineEnds) => {
   }
 }
 
-type SerialisedPoint = string
+const eqPoint: Eq<Point> = {
+  equals: (l: Point, r: Point): boolean => l.x === r.x && l.y === r.y,
+}
+const ordPoint: Ord<Point> = {
+  equals: eqPoint.equals,
+  // All points are equal, we're not giving them an ordering
+  compare: (l: Point, r: Point) => 0,
+}
+
 type Count = number
 const insertOrIncrementMapPoint = (
-  map: Map<SerialisedPoint, Count>,
+  map: Map<Point, Count>,
   point: Point,
-): Map<SerialisedPoint, Count> => {
-  // I tried at one time to make this use a copied map but
-  // the runtime was horrendous. There's also probably a smarter
-  // way to use an object as a key that I don't know.
-  const maybeMapMarking = map.get(JSON.stringify(point))
-  if (!maybeMapMarking) {
-    return map.set(JSON.stringify(point), 1)
-  }
-
-  return map.set(JSON.stringify(point), maybeMapMarking + 1)
-}
+): Map<Point, Count> =>
+  F.pipe(
+    map,
+    M.lookup(eqPoint)(point),
+    O.fold(
+      () => M.upsertAt(eqPoint)(point, 1)(map),
+      (currentCount) => M.upsertAt(eqPoint)(point, currentCount + 1)(map),
+    ),
+  )
 
 const isNotDiagnonal = (lineEnds: LineEnds): boolean =>
   isConnectedHorizontally(lineEnds) || isConnectedVertically(lineEnds)
@@ -107,9 +115,9 @@ export const part1 = (rawInput: string) =>
     A.flatten,
     // For every point we'll insert or update a counter in a map
     // each time we see that point.
-    A.reduce(new Map<SerialisedPoint, Count>(), insertOrIncrementMapPoint),
+    A.reduce(new Map<Point, Count>(), insertOrIncrementMapPoint),
     // Add one to a counter for every point that has more than two lines crossing it
-    M.reduce(S.Ord)(0, sumPointsWithOverlaps),
+    M.reduce(ordPoint)(0, sumPointsWithOverlaps),
   )
 
 export const part2 = (rawInput: string) =>
@@ -118,6 +126,6 @@ export const part2 = (rawInput: string) =>
     parseInput,
     A.map(pointsBetweenLineEnds),
     A.flatten,
-    A.reduce(new Map<SerialisedPoint, Count>(), insertOrIncrementMapPoint),
-    M.reduce(S.Ord)(0, sumPointsWithOverlaps),
+    A.reduce(new Map<Point, Count>(), insertOrIncrementMapPoint),
+    M.reduce(ordPoint)(0, sumPointsWithOverlaps),
   )
