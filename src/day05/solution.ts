@@ -97,9 +97,7 @@ export const part1 = (rawInput: string) =>
     // Remove any diagonal lines
     A.filter(isNotDiagnonal),
     // Produce _all_ the Points in a line between two points
-    A.map(pointsBetweenLineEnds),
-    // Flatten so we have one array of all Points
-    A.flatten,
+    A.chain(pointsBetweenLineEnds),
     // For every point we'll insert or update a counter in a map
     // each time we see that point.
     A.reduce(new Map<SerialisedPoint, Count>(), insertOrIncrementMapPoint),
@@ -111,8 +109,7 @@ export const part2 = (rawInput: string) =>
   F.pipe(
     rawInput,
     parseInput,
-    A.map(pointsBetweenLineEnds),
-    A.flatten,
+    A.chain(pointsBetweenLineEnds),
     A.reduce(new Map<SerialisedPoint, Count>(), insertOrIncrementMapPoint),
     M.reduce(S.Ord)(0, sumPointsWithOverlaps),
   )
