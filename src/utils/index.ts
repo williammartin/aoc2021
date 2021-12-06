@@ -47,3 +47,8 @@ export function rangeInclusive(start = 0, end = 0, step = 1) {
     ? Array.from({ length }, (_value, key) => start - key * step)
     : Array.from({ length }, (_value, key) => start + key * step)
 }
+
+export const splitBy = (separator: string) => (text: string) =>
+  text.split(separator)
+
+export const sum = (l: number, r: number) => l + r
