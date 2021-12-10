@@ -1,5 +1,4 @@
 import run from "aocrunner"
-import { boolean } from "fp-ts"
 import * as A from "fp-ts/lib/Array.js"
 import * as F from "fp-ts/lib/function.js"
 import * as S from "fp-ts/lib/Set.js"
